@@ -33,7 +33,6 @@ module.exports.login = async (req, res) => {
             });
 
             const response = {
-                status: "200",
                 message: "Logged in",
                 user: userInfo,
                 token: token,
@@ -74,7 +73,7 @@ module.exports.forgetPassword = async (req, res) => {
         const user = await adminModel.findOne({ email });
 
         if (user) {
-            const subject = "Test Nodemailer";
+            const subject = `${_CONF.PROJECT_NAME} - confirmation code`;
             const content = templateForgetPassword(user.username, code);
             await sendMail(subject, content, email);
             return res.status(200).json({ message: "Check mail!" });
@@ -83,7 +82,7 @@ module.exports.forgetPassword = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.status(404).json({ message: "Something went wrong!" });
+        return res.status(500).json({ message: "Something went wrong!" });
     }
 };
 
@@ -98,7 +97,7 @@ module.exports.resetPassword = (req, res) => {
                         .status(500)
                         .json({ message: "Something went wrong!" });
                 }
-                // Hash password với salt đã tạo
+                // Hash password with salt
                 bcrypt.hash(
                     passwordNew,
                     saltRounds,
@@ -130,7 +129,7 @@ module.exports.resetPassword = (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.status(404).json({ message: "Something went wrong!" });
+        return res.status(500).json({ message: "Something went wrong!" });
     }
 };
 
@@ -143,7 +142,6 @@ module.exports.refreshToken = (req, res) => {
             expiresIn: _CONF.tokenLife,
         });
         const response = {
-            status: "200",
             message: "Logged in",
             user: userInfo,
             token: token,
@@ -154,38 +152,5 @@ module.exports.refreshToken = (req, res) => {
         res.status(200).json(response);
     } else {
         res.status(404).send("Invalid request");
-    }
-};
-
-module.exports.getPosts = async (req, res) => {
-    try {
-        return res.status(200).json({ message: "Done!" });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Something went wrong!" });
-    }
-};
-
-module.exports.getPost = async (req, res) => {
-    try {
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Something went wrong!" });
-    }
-};
-
-module.exports.updatePost = async (req, res) => {
-    try {
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Something went wrong!" });
-    }
-};
-
-module.exports.createPost = async (req, res) => {
-    try {
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Something went wrong!" });
     }
 };

@@ -1,6 +1,7 @@
 const _CONF = require("../config");
 const nodemailer = require("nodemailer");
 const mstPostCommonModel = require("../models/mst_post_common_model");
+const { cloudinary } = require("../cloudinary");
 
 module.exports.sendMail = async (subject, content, email) => {
     try {
@@ -18,7 +19,7 @@ module.exports.sendMail = async (subject, content, email) => {
         });
 
         const mailOption = {
-            from: `HelloWorld <${_CONF.GMAIL_EMAIL}>`,
+            from: `${_CONF.PROJECT_NAME} <${_CONF.GMAIL_EMAIL}>`,
             to: email,
             subject: subject,
             html: content,
@@ -33,14 +34,36 @@ module.exports.sendMail = async (subject, content, email) => {
 
 module.exports.getNotFound = async (req, res) => {
     try {
-        const errorNotFound = await mstPostCommonModel.findOne({type: _CONF.NOT_FOUND});
-        return res.status(404).json({
-            title: errorNotFound.title,
-            createDate: errorNotFound.createDate,
-            content: JSON.parse(errorNotFound.content)
+        const errorNotFound = await mstPostCommonModel.findOne({
+            contentType: _CONF.NOT_FOUND,
         });
+        if (errorNotFound) {
+            return res.status(200).json({
+                title: errorNotFound.title,
+                createDate: errorNotFound.createDate,
+                content: JSON.parse(errorNotFound.content),
+            });
+        }
+        return res.status(200).json({});
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Something went wrong!" });
     }
-}
+};
+
+module.exports.uploadImage = async (imagePath) => {
+    const options = {
+        use_filename: true,
+        unique_filename: false,
+        overwrite: true,
+        folder: _CONF.PROJECT_NAME,
+    };
+
+    try {
+        const result = await cloudinary.uploader.upload(imagePath, options);
+        console.log(result.secure_url);
+        return result.secure_url;
+    } catch (error) {
+        console.error(error);
+    }
+};

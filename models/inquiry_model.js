@@ -1,25 +1,25 @@
-const mongoose              = require('mongoose');
-const Schema                = mongoose.Schema;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const InquirySchema = new Schema({
     inquiryItem: {
-        type    : Number,
+        type: Number,
         required: true,
     },
     requestContent: {
-        type    : String,
+        type: String,
         required: true,
     },
     name: {
-        type    : String,
+        type: String,
         required: true,
     },
     furigana: {
-        type    : String,
+        type: String,
         required: false,
     },
     emailAddress: {
-        type    : String,
+        type: String,
         required: true,
     },
     address: {
@@ -27,17 +27,23 @@ const InquirySchema = new Schema({
         required: false,
     },
     telephoneNumber: {
-        type    : String,
+        type: String,
         required: true,
     },
     preferredContact: {
-        type    : Number,
+        type: Number,
         required: false,
     },
     contentOfInquiry: {
         type: String,
         required: false,
-    }
-})
+    },
+    answer: {
+        type: String,
+    },
+    createAt: {
+        type: Date,
+    },
+});
 
-module.exports = mongoose.model('Inquiry', InquirySchema);
+module.exports = mongoose.model("Inquiry", InquirySchema);
