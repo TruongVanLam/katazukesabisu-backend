@@ -2,8 +2,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const _CONF = require("../config");
 const adminModel = require("../models/admin_model");
+const authModel = require("../models/auth_model");
 const randomString = require("randomstring");
-const { sendMail } = require("../utils/commonUtil");
+const { sendMail, response } = require("../utils/commonUtil");
 const {
     templateForgetPassword,
 } = require("../templateMail/templateForgetPassword");
@@ -15,51 +16,81 @@ module.exports.login = async (req, res) => {
         if (user) {
             const matchPassword = await bcrypt.compare(password, user.password);
             if (!matchPassword) {
-                return res.status(400).json({ message: "Invalid Credentials" });
+                const result = await response("Invalid Credentials", 400);
+                return res.status(400).json(result);
             }
             const userInfo = {
                 id: user._id,
                 username: user.username,
+                displayName: user.displayName,
                 email: user.email,
                 phone: user.phone,
-                role: "admin",
+                photoUrl: user.photoUrl,
+                role: user.role,
             };
 
-            const token = jwt.sign(userInfo, _CONF.SECRET, {
+            const hashInfo = {
+                id: user._id,
+                username: user.username,
+                date: new Date().getTime(),
+            };
+            const token = jwt.sign(hashInfo, _CONF.SECRET, {
                 expiresIn: _CONF.tokenLife,
             });
-            const refreshToken = jwt.sign(userInfo, _CONF.SECRET_REFRESH, {
+            const refreshToken = jwt.sign(hashInfo, _CONF.SECRET_REFRESH, {
                 expiresIn: _CONF.refreshTokenLife,
             });
 
-            const response = {
-                message: "Logged in",
+            const data = {
                 user: userInfo,
                 token: token,
                 refreshToken: refreshToken,
             };
-            _CONF.refreshTokens[userInfo.id] = {
-                token,
-                refreshToken,
-            };
-            res.status(200).json(response);
+            await new authModel({
+                userId: user._id,
+                token: token,
+                refreshToken: refreshToken,
+            }).save();
+            const result = await response("Logged in", 200, null, data);
+            return res.status(200).json(result);
         } else {
-            return res.status(404).json({ message: "User not found" });
+            const result = await response("User not found", 404);
+            return res.status(404).json(result);
         }
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Something went wrong!" });
+        const result = await response("Something went wrong!", 500);
+        res.status(500).json(result);
     }
 };
 
-module.exports.logout = (req, res) => {
-    const id = req.user.id;
+module.exports.logout = async (req, res) => {
+    const { userId } = req.body;
+    const { authorization } = req.headers;
+    const token = authorization?.replace("Bearer ", "");
     try {
-        delete _CONF.refreshTokens[id];
-        return res.status(200).json({ message: "Logout successful" });
+        if (!userId) {
+            const result = await response("userId is required!", 400);
+            return res.status(400).json(result);
+        }
+        const auth = await authModel.findOneAndDelete({
+            userId: userId,
+            token: token,
+        });
+        if (!auth) {
+            const result = await response("userId not exist!", 400);
+            return res.status(400).json(result);
+        }
+        const result = {
+            statusCode: 200,
+            message: "Logout successful!",
+            data: [],
+        };
+        return res.status(200).json(result);
     } catch (error) {
         console.log(error);
-        return res.status(401).json({ message: "Invalid token!" });
+        const result = await response("Invalid token!", 401);
+        return res.status(401).json(result);
     }
 };
 
@@ -69,33 +100,35 @@ module.exports.forgetPassword = async (req, res) => {
         const code = randomString.generate({
             length: 8,
         });
-        _CONF.GENERATE.code = code;
+        _CONF.GENERATE[email].code = code;
         const user = await adminModel.findOne({ email });
 
         if (user) {
             const subject = `${_CONF.PROJECT_NAME} - confirmation code`;
             const content = templateForgetPassword(user.username, code);
             await sendMail(subject, content, email);
-            return res.status(200).json({ message: "Check mail!" });
+            const result = await response("Check mail!", 200);
+            return res.status(200).json(result);
         } else {
-            return res.status(404).json({ message: "User not found" });
+            const result = await response("User not found", 404);
+            return res.status(404).json(result);
         }
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Something went wrong!" });
+        const result = await response("Something went wrong!", 500);
+        return res.status(500).json(result);
     }
 };
 
-module.exports.resetPassword = (req, res) => {
-    const { passwordNew, code } = req.body;
+module.exports.resetPassword = async (req, res) => {
+    const { email, passwordNew, code } = req.body;
     try {
-        if (code === _CONF.GENERATE.code) {
+        if (code === _CONF.GENERATE[email].code) {
             bcrypt.genSalt(10, async function (err, saltRounds) {
                 if (err) {
                     console.error(err);
-                    return res
-                        .status(500)
-                        .json({ message: "Something went wrong!" });
+                    const result = await response("Something went wrong!", 500);
+                    return res.status(500).json(result);
                 }
                 // Hash password with salt
                 bcrypt.hash(
@@ -104,53 +137,82 @@ module.exports.resetPassword = (req, res) => {
                     async function (err, hash) {
                         if (err) {
                             console.error(err);
-                            return res
-                                .status(500)
-                                .json({ message: "Something went wrong!" });
+                            const result = await response(
+                                "Something went wrong!",
+                                500
+                            );
+                            return res.status(500).json(result);
                         }
                         const user = await adminModel.findOneAndUpdate(
                             { email },
-                            { password: hash, saltRounds: saltRounds }
+                            { password: hash }
                         );
                         if (!user) {
-                            return res
-                                .status(404)
-                                .json({ message: "User not found" });
+                            const result = await response(
+                                "User not found",
+                                404
+                            );
+                            return res.status(404).json(result);
                         }
-                        return res.status(200).json({
-                            email,
-                            message: "Reset password successful",
-                        });
+                        const result = await response(
+                            "Reset password successful",
+                            200,
+                            (data = { email })
+                        );
+                        return res.status(200).json(result);
                     }
                 );
             });
         } else {
-            return res.status(404).json({ message: "Code not found" });
+            const result = await response("Code not found", 404);
+            return res.status(404).json(result);
         }
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Something went wrong!" });
+        const result = await response("Something went wrong!", 500);
+        return res.status(500).json(result);
     }
 };
 
-module.exports.refreshToken = (req, res) => {
-    const { refreshToken } = req.body;
+module.exports.refreshToken = async (req, res) => {
+    const { refreshToken, userId } = req.body;
+    const auth = await authModel.findOne({ userId, refreshToken });
     // if refresh token exists
-    if (refreshToken && refreshToken in _CONF.refreshTokens[req.user.id]) {
-        const userInfo = req.user;
-        const token = jwt.sign(userInfo, _CONF.SECRET, {
-            expiresIn: _CONF.tokenLife,
-        });
-        const response = {
-            message: "Logged in",
-            user: userInfo,
-            token: token,
-            refreshToken: refreshToken,
-        };
-        // update the token in the list
-        _CONF.refreshTokens[req.user.id].token = token;
-        res.status(200).json(response);
+    if (refreshToken && auth) {
+        // verifies secret and checks exp
+        jwt.verify(
+            refreshToken,
+            _CONF.SECRET_REFRESH,
+            async function (err, decoded) {
+                if (err) {
+                    await authModel.findByIdAndDelete(auth._id);
+                    console.error(err.toString());
+                    const result = await response("Unauthorized access.", 401);
+                    return res.status(401).json(result);
+                }
+                const token = jwt.sign(
+                    { id: decoded.id, username: decoded.username, date: new Date().getTime() },
+                    _CONF.SECRET,
+                    {
+                        expiresIn: _CONF.tokenLife,
+                    }
+                );
+                await authModel.findByIdAndUpdate(auth._id, { token: token });
+                const result = await response(
+                    "Reset token successfully!",
+                    200,
+                    null,
+                    (data = {
+                        token: token,
+                        // refreshToken: refreshToken,
+                    })
+                );
+                // update the token in the list
+                res.status(200).json(result);
+            }
+        );
     } else {
-        res.status(404).send("Invalid request");
+        const result = await response("Invalid request", 404);
+        res.status(404).send(result);
     }
 };

@@ -9,6 +9,7 @@ module.exports.notFound = {
             },
         },
     ]),
+    isDisplay: true,
     contentType: 0,
 };
 
@@ -29,6 +30,7 @@ module.exports.formNote = {
             },
         },
     ]),
+    isDisplay: true,
     contentType: 1,
 };
 
@@ -56,6 +58,7 @@ module.exports.privacyPolicy = {
             },
         },
     ]),
+    isDisplay: true,
     contentType: 2,
 };
 
@@ -88,11 +91,12 @@ module.exports.communicationMethod = {
             },
         },
     ],
+    isDisplay: true,
     contentType: 3,
 };
 
 module.exports.introduction = {
-    title: "その不用品の回収、お任せください！",
+    title: "不用品の回収は、全てお任せください！",
     createDate: "",
     content: [
         {
@@ -107,22 +111,23 @@ module.exports.introduction = {
         {
             type: "paragraph",
             data: {
-                text: 'お客様は立ち合いのみ、事前の分別も不要です！全てお任せください！<br />他社では別途請求となる<strong className="bg-[#f76600] text-[110%]">搬出作業費（大型家電含む）・お掃除作業費・車両費・出張費・梱包作業費などが全て込みの料金</strong>です。',
+                text: "かたづけサービスは不用品・粗大ゴミ・引っ越しでのゴミなどの回収に困っているお客様は、ご軽気にご連絡ください",
             },
         },
         {
             type: "paragraph",
             data: {
-                text: '<strong className="bg-[#0000ff] text-[110%]">大阪．兵庫．奈良</strong>で不用品回収・買取・粗大ゴミの回収、遺品整理などでお困りの方はご相談ください。<br /><strong className="bg-[#f76600] text-[110%]">お見積りは無料</strong>ですので安心してご連絡ください！',
+                text: "<strong>お見積りは無料です！</strong>",
             },
         },
     ],
+    isDisplay: true,
     contentType: 4,
     _name: "introduction",
 };
 
 module.exports.serviceIntro = {
-    title: "追加料金一切なし！",
+    title: "追加料金は一切なし！",
     createDate: "",
     style: "with-background",
     isDisplay: true,
@@ -140,7 +145,7 @@ module.exports.serviceIntro = {
         {
             type: "header",
             data: {
-                text: "出張費・お見積り・基本料金無料！",
+                text: "出張費・お見積り・基本料金は全て無料！",
                 withBackground: true,
                 level: 4,
             },
@@ -148,16 +153,17 @@ module.exports.serviceIntro = {
         {
             type: "paragraph",
             data: {
-                text: "お客様は立ち合いのみ、事前の分別も不要です！全てお任せください！",
+                text: "全てお任せください！お客様はお立ち合いだけです。",
             },
         },
         {
             type: "paragraph",
             data: {
-                text: '他社では別途請求となる<strong className="bg-[#f76600] text-[110%]">搬出作業費（大型家電含む）・お掃除作業費・車両費・出張費・梱包作業費などが全て込みの料金</strong>です。',
+                text: "お見積りでご提示した金額は搬出作業費や掃除作業費なども全て含まれておりますので、追加料金は一切ありません。",
             },
         },
     ],
+    isDisplay: true,
     contentType: 4,
     _name: "serviceIntro",
 };
@@ -183,6 +189,7 @@ module.exports.serviceList = {
                 "手洗い・検温・消毒・マスクの着用など、感染拡大防止策を徹底しております。",
         },
     ],
+    isDisplay: true,
     contentType: 4,
     _name: "serviceList",
 };
@@ -194,74 +201,52 @@ module.exports.serviceGuide = {
     content: [
         {
             src: "",
-            subTitle: "最短30分以内に到着！",
+            subTitle: "粗大ゴミの回収",
             alt: "クレジットカード支払_VISA",
-            caption:
-                "We have been working on this project more than three years.",
+            caption: "山積みのゴミにお困りしませんか？",
         },
         {
             src: "",
-            subTitle: "最短30分以内に到着！",
+            subTitle: "不用品の撤去",
             alt: "クレジットカード支払_VISA",
-            caption:
-                "We have been working on this project more than three years.",
-        },
-
-        {
-            src: "",
-            subTitle: "最短30分以内に到着！",
-            alt: "クレジットカード支払_VISA",
-            caption:
-                "We have been working on this project more than three years.",
+            caption: "山積みのゴミにお困りしませんか？",
         },
         {
             src: "",
-            subTitle: "最短30分以内に到着！",
+            subTitle: "引っ越しのお掃除",
             alt: "クレジットカード支払_VISA",
-            caption:
-                "We have been working on this project more than three years. We have been working on this project more than three years.",
+            caption: "お引越しのお客様はご安心いただけます！",
         },
         {
             src: "",
-            subTitle: "最短30分以内に到着！",
+            subTitle: "モノの買取",
             alt: "クレジットカード支払_VISA",
-            caption:
-                "We have been working on this project more than three years.",
-        },
-        {
-            src: "",
-            subTitle: "最短30分以内に到着！",
-            alt: "クレジットカード支払_VISA",
-            caption:
-                "最短30分以内に到着！最短30分以内に到着！最短30分以内に到着！最短30分以内に到着！最短30分以内に到着！",
+            caption: "捨てそうな家電製品は高額で販売できるかもしれません！",
         },
     ],
+    isDisplay: true,
     contentType: 4,
     _name: "serviceGuide",
 };
 
 module.exports.availableArea = {
     title: "対応エリア",
-    style: "grid-cols-2",
+    style: "img-map",
     content: [
         {
             src: "",
             alt: "大阪．兵庫．奈良エリア",
-            caption: "大阪．兵庫．奈良",
-        },
-        {
-            src: "",
-            alt: "大阪府エリア",
-            caption: "大阪府",
+            caption: "",
         },
     ],
+    isDisplay: true,
     contentType: 4,
     _name: "availableArea",
 };
 
 module.exports.coupons = {
     title: "キャンペーン実施中！",
-    isDisplay: true,
+    isDisplay: false,
     content: {
         heading: {
             text: "出張費・お見積り・基本料金無料！",
@@ -287,28 +272,35 @@ module.exports.coupons = {
 };
 
 module.exports.aboutUs = {
-    title: "事業所概要",
+    title: "事業所情報",
     createDate: "",
     content: JSON.stringify([
         {
             type: "contact-list",
             data: {
-                label: "事業所名",
-                value: "おたすけクリーン",
+                label: "企業名",
+                value: "MaiLinhGroup株式会社",
             },
         },
         {
             type: "contact-list",
             data: {
                 label: "所在地",
-                value: "〒558-0011 大阪市住吉区苅田",
+                value: "愛知県春日井市中央通2-78",
+            },
+        },
+        {
+            type: "contact-list",
+            data: {
+                label: "事業所名",
+                value: "かたづけサービス",
             },
         },
         {
             type: "contact-list",
             data: {
                 label: "電話番号",
-                value: "0120-993-829",
+                value: "070-2213-4567",
             },
         },
         {
@@ -329,10 +321,11 @@ module.exports.aboutUs = {
             type: "contact-list",
             data: {
                 label: "事業内容",
-                value: "不用品買取・不用品回収、",
+                value: "不用品・粗大ゴミの回収、引っ越しの掃除、遺品整理など",
             },
         },
     ]),
+    isDisplay: true,
     contentType: 5,
 };
 
@@ -344,7 +337,7 @@ module.exports.footerContact = {
             type: "contact-list",
             data: {
                 label: "電話番号",
-                value: "0120-993-829",
+                value: "070-2213-4567",
             },
         },
         {
@@ -358,28 +351,29 @@ module.exports.footerContact = {
             type: "contact-list",
             data: {
                 label: "対応エリア",
-                value: "大阪・兵庫・奈良",
+                value: "",
             },
         },
         {
             type: "contact-list",
             data: {
                 label: "所在地",
-                value: "〒558-0011<br />大阪市住吉区苅田",
+                value: "",
             },
         },
     ]),
+    isDisplay: true,
     contentType: 6,
 };
 
 module.exports.summary = {
-    title: "ご利用の流れ",
     content: JSON.stringify([
         { innerText: "回収までの流れ", location: "#f01" },
         { innerText: "取り扱いクレジットカード", location: "#f02" },
         { innerText: "LINEでのご相談方法", location: "#f03" },
         { innerText: "よくあるご質問", location: "#f04" },
     ]),
+    isDisplay: false,
     contentType: 7,
     _name: "summary",
 };
@@ -391,7 +385,7 @@ module.exports.collection = {
         {
             title: "1.お問い合わせ",
             content:
-                'まずはお電話（<a class="tel-link" href="tel:0120569028">0120-569-028</a>）、<a href="https://lin.ee/9rjqYdx" rel="noopener" target="_blank">LINE</a>、<a href="/contact.html">メール</a>にてお問い合わせください。<br>初回のご相談・お見積りは無料ですので、お気軽にお申し付けください。',
+                'まずはお電話（<a class="tel-link" href="tel:07022134567">070-2213-4567</a>）、<a href="https://lin.ee/9rjqYdx" rel="noopener" target="_blank">LINE</a>などにてお問い合わせいただきます。',
             button: [
                 { innerText: "お問い合わせフォーム", location: "/contact" },
                 { innerText: "LINEでのご相談方法", location: "#f03" },
@@ -400,19 +394,19 @@ module.exports.collection = {
         {
             title: "2.お見積り",
             content:
-                "お問い合わせの際、ご都合の良い日時をお伝えください。<br> ご指定いただいた日時に、弊社スタッフが現場までお伺いいたします。",
+                " 現場までお伺いいたしますので、ご都合の良い日時を教えてください！",
         },
         {
-            title: "3.片付け・回収作業",
+            title: "3.作業開始",
             content:
-                "お見積りに納得いただけたらご都合のよい日時を取り決め、作業にお伺いします。<br> もちろん即日対応も可能です。お見積りの際、スタッフにお申し付けください。",
+                "お提示のお見積りで問題がなければ、ご都合の良い日時を取り決め、作業を開始いたします。<br> 即日も対応可能です！",
         },
         {
             title: "4.作業終了、お支払い",
-            content:
-                "作業終了後、現金またはクレジットカード、または後日振り込みにてお支払ください。",
+            content: "現金もクレジットカードも振り込みも対応いたします！",
         },
     ]),
+    isDisplay: true,
     contentType: 7,
     _name: "collection",
 };
@@ -442,6 +436,7 @@ module.exports.paymentMethod = {
             caption: "",
         },
     ],
+    isDisplay: true,
     contentType: 7,
     _name: "paymentMethod",
 };
@@ -454,13 +449,7 @@ module.exports.guide = {
         {
             type: "paragraph",
             data: {
-                text: "トーク機能で簡単に写真や文章を送っていただくことで、24時間無料でお見積りやご依頼ができます。<br />下記の友達追加バナーをクリックorタップ、またはQR読み込みで弊社の公式アカウントが開きますので、お友達追加の上、ご連絡ください。",
-            },
-        },
-        {
-            type: "paragraph",
-            data: {
-                text: "もちろん、ご不明な点などをご相談していただいても構いません。弊社スタッフが丁寧に対応いたします。",
+                text: "LINEでもご相談とお見積りのご依頼を簡単にできますので、このQRコードで「友だち追加」をして、ご連絡ください！",
             },
         },
         {
@@ -474,6 +463,7 @@ module.exports.guide = {
             },
         },
     ],
+    isDisplay: true,
     contentType: 7,
     _name: "guide",
 };
@@ -522,6 +512,7 @@ module.exports.lineTemplate = {
             },
         },
     ],
+    isDisplay: false,
     contentType: 7,
     _name: "lineTemplate",
 };
@@ -550,6 +541,7 @@ module.exports.listQA = {
             answer: "基本的にございませんので、何でもご相談ください！",
         },
     ]),
+    isDisplay: true,
     contentType: 7,
     _name: "listQA",
 };
@@ -569,5 +561,13 @@ module.exports.contactUs = {
             },
         },
     ],
+    isDisplay: true,
     contentType: 13,
+};
+
+module.exports.blogCommon = {
+    title: "ブログ",
+    createDate: "",
+    content: "",
+    contentType: 14,
 };

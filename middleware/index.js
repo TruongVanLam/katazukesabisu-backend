@@ -1,61 +1,44 @@
 const jwt = require("jsonwebtoken");
 const _CONF = require("../config");
+const { response } = require("../utils/commonUtil");
+const adminModel = require("../models/admin_model");
+const authModel = require("../models/auth_model");
 
-module.exports.isAuthentication = (req, res, next) => {
-    const { token } = req.headers;
+module.exports.isAuthentication = async (req, res, next) => {
+    const { authorization } = req.headers;
+    const token = authorization?.replace("Bearer ", "");
     // decode token
     if (token) {
         // verifies secret and checks exp
-        jwt.verify(token, _CONF.SECRET, function (err, decoded) {
+        jwt.verify(token, _CONF.SECRET, async function (err, decoded) {
             if (err) {
-                delete _CONF.refreshTokens[decoded?.id];
-                console.error(err.toString());
-                return res.status(401).json({
-                    error: true,
-                    message: "Unauthorized access.",
-                    err,
+                await authModel.findOneAndUpdate({ userId: decoded?.id, token }, {
+                    token: null,
                 });
-            } else if (_CONF.refreshTokens[decoded?.id]?.token === token) {
-                req.user = decoded;
+                console.error(err.toString());
+                const result = await response("Unauthorized access.", 401);
+                return res.status(401).json(result);
+            }
+            const auth = await authModel.findOne({ userId: decoded?.id, token });
+            if (auth) {
                 next();
             } else {
-                return res
-                    .status(401)
-                    .json({ error: true, message: "Unauthorized access." });
+                const result = await response("Unauthorized access.", 401);
+                return res.status(401).json(result);
             }
         });
     } else {
-        return res.status(403).json({
-            error: true,
-            message: "No token provided.",
-        });
+        const result = await response("No token provided.", 403);
+        return res.status(403).json(result);
     }
 };
 
-module.exports.isAuth = (req, res, next) => {
-    const refreshToken = req.headers.refreshToken;
-    if (refreshToken) {
-        // verifies secret and checks exp
-        jwt.verify(refreshToken, _CONF.SECRET_REFRESH, function (err, decoded) {
-            if (err) {
-                delete _CONF.refreshTokens[decoded.id];
-                console.error(err.toString());
-                return res.status(401).json({
-                    error: true,
-                    message: "Unauthorized access.",
-                    err,
-                });
-            } else if (refreshToken in _CONF.refreshTokens[decoded.id]) {
-                next();
-            }
-            return res
-                .status(401)
-                .json({ error: true, message: "Unauthorized access." });
-        });
-    } else {
-        return res.status(403).json({
-            error: true,
-            message: "No refreshToken provided.",
-        });
-    }
-};
+module.exports.getUrlImageUpload = async (req, res) => {
+    const result = await response(
+        "Upload image to cloudinary successfully!",
+        200,
+        null,
+        req.file.path
+    );
+    return res.status(200).json(result);
+}

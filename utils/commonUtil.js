@@ -2,6 +2,7 @@ const _CONF = require("../config");
 const nodemailer = require("nodemailer");
 const mstPostCommonModel = require("../models/mst_post_common_model");
 const { cloudinary } = require("../cloudinary");
+const seoHelmetModel = require("../models/seo_helmet_model");
 
 module.exports.sendMail = async (subject, content, email) => {
     try {
@@ -38,16 +39,46 @@ module.exports.getNotFound = async (req, res) => {
             contentType: _CONF.NOT_FOUND,
         });
         if (errorNotFound) {
-            return res.status(200).json({
-                title: errorNotFound.title,
-                createDate: errorNotFound.createDate,
-                content: JSON.parse(errorNotFound.content),
-            });
+            const result = await this.response(
+                "Get not found successfully!",
+                200,
+                {
+                    title: errorNotFound.title,
+                    createDate: errorNotFound.createDate,
+                    content: JSON.parse(errorNotFound.content),
+                }
+            );
+            return res.status(200).json(result);
         }
-        return res.status(200).json({});
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Something went wrong!" });
+        const result = await this.response("Something went wrong!", 500);
+        return res.status(500).json(result);
+    }
+};
+
+module.exports.getNotFoundClient = async (req, res) => {
+    try {
+        const errorNotFound = await mstPostCommonModel.findOne({
+            contentType: _CONF.NOT_FOUND,
+            isDisplay: true,
+        });
+        if (errorNotFound) {
+            const result = await this.response(
+                "Get not found successfully!",
+                200,
+                {
+                    title: errorNotFound.title,
+                    createDate: errorNotFound.createDate,
+                    content: JSON.parse(errorNotFound.content),
+                }
+            );
+            return res.status(200).json(result);
+        }
+    } catch (error) {
+        console.log(error);
+        const result = await this.response("Something went wrong!", 500);
+        return res.status(500).json(result);
     }
 };
 
@@ -66,4 +97,23 @@ module.exports.uploadImage = async (imagePath) => {
     } catch (error) {
         console.error(error);
     }
+};
+
+module.exports.response = async (
+    message,
+    statusCode,
+    page = null,
+    data = undefined
+) => {
+    let seoHelmet = undefined;
+    if (statusCode == 200) {
+        const seoHelmetData = await seoHelmetModel.findOne({ nameSeo: page });
+        seoHelmet = seoHelmetData ? JSON.parse(seoHelmetData.content) : [];
+    }
+    return {
+        statusCode,
+        message,
+        data,
+        seoHelmet,
+    };
 };

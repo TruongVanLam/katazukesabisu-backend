@@ -8,6 +8,9 @@ const AdminSchema = new Schema({
         required: true,
         unique: true,
     },
+    displayName: {
+        type: String,
+    },
     email: {
         type: String,
         required: true,
@@ -16,13 +19,15 @@ const AdminSchema = new Schema({
     phone: {
         type: String,
     },
+    photoUrl: {
+        type: String,
+    },
+    role: {
+        type: String,
+    },
     password: {
         type: String,
         required: true,
-    },
-    saltRounds: {
-        type: String,
-        // required: true,
     },
 });
 
